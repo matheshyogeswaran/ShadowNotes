@@ -1,37 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { lightTheme } from './src/theme/lightTheme';
-import { darkTheme } from './src/theme/darkTheme';
 import HomeScreen from './src/screen/HomeScreen';
 import DocumentScreen from './src/screen/DocumentScreen';
-import Icon from 'react-native-vector-icons/Ionicons'; // Using Ionicons for a different icon
+import SettingsScreen from './src/screen/SettingsScreen';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-// Create Stack Navigator and Tab Navigator
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
-// Placeholder components for tabs
-const LikedNotesScreen = () => (
-  <View style={styles.screenContainer}>
-    <Text>Liked Notes Screen</Text>
-  </View>
-);
-
-const SettingsScreen = () => (
-  <View style={styles.screenContainer}>
-    <Text>Settings Screen</Text>
-  </View>
-);
-
-// New Profile Screen
-const ProfileScreen = () => (
-  <View style={styles.screenContainer}>
-    <Text>Profile Screen</Text>
-  </View>
-);
 
 // Notes Stack Navigator
 const NotesStack = () => (
@@ -41,7 +19,7 @@ const NotesStack = () => (
   </Stack.Navigator>
 );
 
-// Main Tab Navigator
+// Main Tabs
 const MainTabs = () => {
   return (
     <Tab.Navigator
@@ -49,16 +27,14 @@ const MainTabs = () => {
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
-          // Assign icons based on route name
           if (route.name === 'Notes') {
-            iconName = 'book-outline'; // New icon for Notes Tab (Ionicons)
+            iconName = 'book-outline';
           } else if (route.name === 'Liked') {
-            iconName = 'heart-outline'; // Icon for Liked Notes Tab
+            iconName = 'heart-outline';
           } else if (route.name === 'Settings') {
-            iconName = 'settings-outline'; // Icon for Settings Tab
-          } 
-          else if (route.name === 'Profile') {
-            iconName = 'person-outline'; // Icon for Profile Tab
+            iconName = 'settings-outline';
+          } else if (route.name === 'Profile') {
+            iconName = 'person-outline';
           }
 
           return <Icon name={iconName} size={size} color={color} />;
@@ -69,14 +45,13 @@ const MainTabs = () => {
       })}
     >
       <Tab.Screen name="Notes" component={NotesStack} />
-      <Tab.Screen name="Liked" component={LikedNotesScreen} />
+      <Tab.Screen name="Liked" component={SettingsScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
-      {/* <Tab.Screen name="Profile" component={ProfileScreen} /> */}
+
     </Tab.Navigator>
   );
 };
 
-// App Component
 const App = () => {
   return (
     <NavigationContainer theme={lightTheme}>
@@ -84,14 +59,5 @@ const App = () => {
     </NavigationContainer>
   );
 };
-
-// Styles
-const styles = StyleSheet.create({
-  screenContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default App;
