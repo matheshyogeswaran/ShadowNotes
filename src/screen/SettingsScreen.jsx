@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
@@ -36,10 +36,10 @@ const requestStoragePermission = async () => {
 const SettingsScreen = () => {
   // Export Notes
   const exportNotes = async () => {
-    const permissionGranted = await requestStoragePermission();
-    if (!permissionGranted) {
-      return; // Exit if permission not granted
-    }
+    // const permissionGranted = await requestStoragePermission();
+    // if (!permissionGranted) {
+    //   return;
+    // }
 
     try {
       const savedNotes = await AsyncStorage.getItem('notes');
@@ -48,14 +48,20 @@ const SettingsScreen = () => {
         return;
       }
 
+      // Ensure notes are exported with the latest structure
+      const notes = JSON.parse(savedNotes);
+      if (!Array.isArray(notes)) {
+        Alert.alert('Error!', 'Notes data is corrupted.');
+        return;
+      }
+
       const fileName = 'notes.json';
       const filePath =
         Platform.OS === 'android'
-          ? `${RNFS.DownloadDirectoryPath}/${fileName}` // Android: Downloads folder
-          : `${RNFS.DocumentDirectoryPath}/${fileName}`; // iOS: Documents folder
+          ? `${RNFS.DownloadDirectoryPath}/${fileName}`
+          : `${RNFS.DocumentDirectoryPath}/${fileName}`;
 
-      // Write the notes to the file
-      await RNFS.writeFile(filePath, savedNotes, 'utf8');
+      await RNFS.writeFile(filePath, JSON.stringify(notes), 'utf8');
 
       Alert.alert('Success!', `Notes exported to: ${filePath}`);
     } catch (error) {
@@ -71,25 +77,31 @@ const SettingsScreen = () => {
         type: [DocumentPicker.types.allFiles],
       });
 
-      // Read content from the selected file
       const content = await RNFS.readFile(res.uri, 'utf8');
       const importedNotes = JSON.parse(content);
 
-      // Validate the imported content
       if (!Array.isArray(importedNotes)) {
         Alert.alert('Invalid format!', 'Please select a valid notes file.');
         return;
       }
 
-      // Save imported notes to AsyncStorage
-      await AsyncStorage.setItem('notes', JSON.stringify(importedNotes));
+      // Ensure all notes have the "liked" field
+      const normalizedNotes = importedNotes.map(note => ({
+        ...note,
+        liked: note.liked ?? false, // Default to false if "liked" is missing
+      }));
+
+      await AsyncStorage.setItem('notes', JSON.stringify(normalizedNotes));
       Alert.alert('Success!', 'Notes imported successfully!');
     } catch (error) {
       if (DocumentPicker.isCancel(error)) {
         console.log('User canceled the picker.');
       } else {
         console.error('Failed to import notes:', error);
-        Alert.alert('Failed to import notes.');
+        Alert.alert(
+          'Error',
+          'Failed to import notes. Ensure the file is valid.',
+        );
       }
     }
   };

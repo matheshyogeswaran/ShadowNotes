@@ -7,6 +7,7 @@ import HomeScreen from './src/screen/HomeScreen';
 import DocumentScreen from './src/screen/DocumentScreen';
 import SettingsScreen from './src/screen/SettingsScreen';
 import Icon from 'react-native-vector-icons/Ionicons';
+import LikedNotesScreen from './src/screen/LikedNotesScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -45,7 +46,7 @@ const MainTabs = () => {
       })}
     >
       <Tab.Screen name="Notes" component={NotesStack} />
-      <Tab.Screen name="Liked" component={SettingsScreen} />
+      <Tab.Screen name="Liked" component={LikedNotesScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
 
     </Tab.Navigator>

@@ -70,12 +70,12 @@ const HomeScreen = ({navigation}) => {
     }
   };
 
-  // Add a new note
   const addNote = async () => {
     const newNote = {
       id: Date.now().toString(),
       title: 'New Note',
       description: 'Enter your note here...',
+      liked: false, // Add liked property
     };
     const updatedNotes = [...notes, newNote];
     setNotes(updatedNotes);
@@ -114,11 +114,19 @@ const HomeScreen = ({navigation}) => {
     },
   });
 
+  const toggleLike = async (id) => {
+    const updatedNotes = notes.map(note =>
+      note.id === id ? { ...note, liked: !note.liked } : note
+    );
+    setNotes(updatedNotes);
+    await AsyncStorage.setItem('notes', JSON.stringify(updatedNotes));
+  };
+  
+
   return (
     <View style={styles.container}>
       <Header />
       <Text style={styles.text}>Notes</Text>
-
       <FlatList
         data={notes}
         keyExtractor={item => item.id}
@@ -126,8 +134,10 @@ const HomeScreen = ({navigation}) => {
           <Card
             title={item.title}
             description={item.description}
+            liked={item.liked} // Pass the liked state
             onPress={() => navigation.navigate('Document', {note: item})}
-            onDelete={() => deleteNote(item.id)} // Pass delete handler
+            onLike={() => toggleLike(item.id)} // Pass the like handler
+            onDelete={() => deleteNote(item.id)}
           />
         )}
       />
